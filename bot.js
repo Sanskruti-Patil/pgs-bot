@@ -3,7 +3,7 @@
 
 const { ActivityTypes, ActivityHandler } = require('botbuilder');
 
-class EmptyBot extends ActivityHandler {
+class MyBot extends ActivityHandler {
     constructor() {
         super();
     }
@@ -28,4 +28,4 @@ class EmptyBot extends ActivityHandler {
     }
 }
 
-module.exports.EmptyBot = EmptyBot;
+module.exports.MyBot = MyBot;
