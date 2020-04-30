@@ -12,7 +12,7 @@ const DATE_RESOLVER_DIALOG = 'dateResolverDialog';
 const TEXT_PROMPT = 'textPrompt';
 const WATERFALL_DIALOG = 'waterfallDialog';
 
-class BookingDialog extends CancelAndHelpDialog {
+class OrderDialog extends CancelAndHelpDialog {
     constructor(id) {
         super(id || 'bookingDialog');
 
@@ -20,9 +20,9 @@ class BookingDialog extends CancelAndHelpDialog {
             .addDialog(new ConfirmPrompt(CONFIRM_PROMPT))
             .addDialog(new DateResolverDialog(DATE_RESOLVER_DIALOG))
             .addDialog(new WaterfallDialog(WATERFALL_DIALOG, [
-                this.destinationStep.bind(this),
-                this.originStep.bind(this),
-                this.travelDateStep.bind(this),
+                //this.destinationStep.bind(this),
+                this.itemStep.bind(this),
+                this.deliveryDateStep.bind(this),
                 this.confirmStep.bind(this),
                 this.finalStep.bind(this)
             ]));
@@ -33,57 +33,57 @@ class BookingDialog extends CancelAndHelpDialog {
     /**
      * If a destination city has not been provided, prompt for one.
      */
-    async destinationStep(stepContext) {
-        const bookingDetails = stepContext.options;
+    // async destinationStep(stepContext) {
+    //     const bookingDetails = stepContext.options;
 
-        if (!bookingDetails.destination) {
-            const messageText = 'To what city would you like to travel?';
-            const msg = MessageFactory.text(messageText, messageText, InputHints.ExpectingInput);
-            return await stepContext.prompt(TEXT_PROMPT, { prompt: msg });
-        }
-        return await stepContext.next(bookingDetails.destination);
-    }
+    //     if (!bookingDetails.destination) {
+    //         const messageText = 'To what city would you like to travel?';
+    //         const msg = MessageFactory.text(messageText, messageText, InputHints.ExpectingInput);
+    //         return await stepContext.prompt(TEXT_PROMPT, { prompt: msg });
+    //     }
+    //     return await stepContext.next(bookingDetails.destination);
+    // }
 
     /**
      * If an origin city has not been provided, prompt for one.
      */
-    async originStep(stepContext) {
-        const bookingDetails = stepContext.options;
+    async itemStep(stepContext) {
+        const orderDetails = stepContext.options;
 
         // Capture the response to the previous step's prompt
-        bookingDetails.destination = stepContext.result;
-        if (!bookingDetails.origin) {
-            const messageText = 'From what city will you be travelling?';
-            const msg = MessageFactory.text(messageText, 'From what city will you be travelling?', InputHints.ExpectingInput);
+        orderDetails.item = stepContext.result;
+        if (!orderDetails.item) {
+            const messageText = 'What would you like to order?';
+            const msg = MessageFactory.text(messageText, 'What would you like to order?', InputHints.ExpectingInput);
             return await stepContext.prompt(TEXT_PROMPT, { prompt: msg });
         }
-        return await stepContext.next(bookingDetails.origin);
+        return await stepContext.next(orderDetails.item);
     }
 
     /**
      * If a travel date has not been provided, prompt for one.
      * This will use the DATE_RESOLVER_DIALOG.
      */
-    async travelDateStep(stepContext) {
-        const bookingDetails = stepContext.options;
+    async deliveryDateStep(stepContext) {
+        const orderDetails = stepContext.options;
 
         // Capture the results of the previous step
-        bookingDetails.origin = stepContext.result;
-        if (!bookingDetails.travelDate || this.isAmbiguous(bookingDetails.travelDate)) {
-            return await stepContext.beginDialog(DATE_RESOLVER_DIALOG, { date: bookingDetails.travelDate });
+        orderDetails.origin = stepContext.result;
+        if (!orderDetails.DeliveryDate || this.isAmbiguous(orderDetails.deliveryDate)) {
+            return await stepContext.beginDialog(DATE_RESOLVER_DIALOG, { date: orderDetails.deliveryDate });
         }
-        return await stepContext.next(bookingDetails.travelDate);
+        return await stepContext.next(orderDetails.deliveryDate);
     }
 
     /**
      * Confirm the information the user has provided.
      */
     async confirmStep(stepContext) {
-        const bookingDetails = stepContext.options;
+        const orderDetails = stepContext.options;
 
         // Capture the results of the previous step
-        bookingDetails.travelDate = stepContext.result;
-        const messageText = `Please confirm, I have you traveling to: ${ bookingDetails.destination } from: ${ bookingDetails.origin } on: ${ bookingDetails.travelDate }. Is this correct?`;
+        orderDetails.deliveryDate = stepContext.result;
+        const messageText = `Please confirm, I have you ordering to: ${ orderDetails.item } on: ${ orderDetails.deliveryDate }. Is this correct?`;
         const msg = MessageFactory.text(messageText, messageText, InputHints.ExpectingInput);
 
         // Offer a YES/NO prompt.
@@ -95,8 +95,8 @@ class BookingDialog extends CancelAndHelpDialog {
      */
     async finalStep(stepContext) {
         if (stepContext.result === true) {
-            const bookingDetails = stepContext.options;
-            return await stepContext.endDialog(bookingDetails);
+            const orderDetails = stepContext.options;
+            return await stepContext.endDialog(orderDetails);
         }
         return await stepContext.endDialog();
     }
@@ -107,4 +107,4 @@ class BookingDialog extends CancelAndHelpDialog {
     }
 }
 
-module.exports.BookingDialog = BookingDialog;
+module.exports.OrderDialog = OrderDialog;

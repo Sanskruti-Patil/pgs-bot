@@ -3,14 +3,14 @@
 
 const { LuisRecognizer } = require('botbuilder-ai');
 
-class FlightBookingRecognizer {
+class OrderRecognizer {
     constructor(config) {
         const luisIsConfigured = config && config.applicationId && config.endpointKey && config.endpoint;
         if (luisIsConfigured) {
             // Set the recognizer options depending on which endpoint version you want to use e.g v2 or v3.
             // More details can be found in https://docs.microsoft.com/en-gb/azure/cognitive-services/luis/luis-migration-api-v3
             const recognizerOptions = {
-                apiVersion: 'v3'
+                apiVersion: 'v4'
             };
 
             this.recognizer = new LuisRecognizer(config, recognizerOptions);
@@ -29,35 +29,35 @@ class FlightBookingRecognizer {
         return await this.recognizer.recognize(context);
     }
 
-    getFromEntities(result) {
-        let fromValue, fromAirportValue;
-        if (result.entities.$instance.From) {
-            fromValue = result.entities.$instance.From[0].text;
+    // getFromEntities(result) {
+    //     let fromValue, fromAirportValue;
+    //     if (result.entities.$instance.From) {
+    //         fromValue = result.entities.$instance.From[0].text;
+    //     }
+    //     if (fromValue && result.entities.From[0].Airport) {
+    //         fromAirportValue = result.entities.From[0].Airport[0][0];
+    //     }
+
+    //     return { from: fromValue, airport: fromAirportValue };
+    // }
+
+    getDeliverEntities(result) {
+        let deliverValue, deliverItemListValue;
+        if (result.entities.$instance.Deliver) {
+            deliverValue = result.entities.$instance.Deliver[0].text;
         }
-        if (fromValue && result.entities.From[0].Airport) {
-            fromAirportValue = result.entities.From[0].Airport[0][0];
+        if (deliverValue && result.entities.Deliver[0].ItemList) {
+            deliverItemListValue = result.entities.Deliver[0].ItemList[0][0];
         }
 
-        return { from: fromValue, airport: fromAirportValue };
-    }
-
-    getToEntities(result) {
-        let toValue, toAirportValue;
-        if (result.entities.$instance.To) {
-            toValue = result.entities.$instance.To[0].text;
-        }
-        if (toValue && result.entities.To[0].Airport) {
-            toAirportValue = result.entities.To[0].Airport[0][0];
-        }
-
-        return { to: toValue, airport: toAirportValue };
+        return { deliver: deliverValue, itemList: deliverItemListValue };
     }
 
     /**
      * This value will be a TIMEX. And we are only interested in a Date so grab the first result and drop the Time part.
      * TIMEX is a format that represents DateTime expressions that include some ambiguity. e.g. missing a Year.
      */
-    getTravelDate(result) {
+    getDeliveryDate(result) {
         const datetimeEntity = result.entities.datetime;
         if (!datetimeEntity || !datetimeEntity[0]) return undefined;
 
@@ -69,4 +69,4 @@ class FlightBookingRecognizer {
     }
 }
 
-module.exports.FlightBookingRecognizer = FlightBookingRecognizer;
+module.exports.OrderRecognizer = OrderRecognizer;

@@ -11,15 +11,15 @@ const restify = require('restify');
 // See https://aka.ms/bot-services to learn more about the different parts of a bot.
 const { BotFrameworkAdapter, ConversationState, InputHints, MemoryStorage, UserState } = require('botbuilder');
 
-const { FlightBookingRecognizer } = require('./dialogs/flightBookingRecognizer');
+const { OrderRecognizer } = require('./dialogs/orderRecognizer');
 
 // This bot's main dialog.
 const { DialogAndWelcomeBot } = require('./bots/dialogAndWelcomeBot');
 const { MainDialog } = require('./dialogs/mainDialog');
 
 // the bot's booking dialog
-const { BookingDialog } = require('./dialogs/bookingDialog');
-const BOOKING_DIALOG = 'bookingDialog';
+const { OrderDialog } = require('./dialogs/orderDialog');
+const ORDER_DIALOG = 'orderDialog';
 
 // Note: Ensure you have a .env file and include LuisAppId, LuisAPIKey and LuisAPIHostName.
 const ENV_FILE = path.join(__dirname, '.env');
@@ -73,11 +73,11 @@ const userState = new UserState(memoryStorage);
 const { LuisAppId, LuisAPIKey, LuisAPIHostName } = process.env;
 const luisConfig = { applicationId: LuisAppId, endpointKey: LuisAPIKey, endpoint: `https://${ LuisAPIHostName }` };
 
-const luisRecognizer = new FlightBookingRecognizer(luisConfig);
+const luisRecognizer = new OrderRecognizer(luisConfig);
 
 // Create the main dialog.
-const bookingDialog = new BookingDialog(BOOKING_DIALOG);
-const dialog = new MainDialog(luisRecognizer, bookingDialog);
+const orderDialog = new OrderDialog(ORDER_DIALOG);
+const dialog = new MainDialog(luisRecognizer, orderDialog);
 const bot = new DialogAndWelcomeBot(conversationState, userState, dialog);
 
 // Create HTTP server
