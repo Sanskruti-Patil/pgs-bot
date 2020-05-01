@@ -136,7 +136,7 @@ class MainDialog extends ComponentDialog {
             // If the call to the ordering service was successful tell the user.
             const timeProperty = new TimexProperty(result.deliveryDate);
             const deliveryDateMsg = timeProperty.toNaturalLanguage(new Date(Date.now()));
-            const msg = `I have you ordered ${ result.item } on ${ deliveryDateMsg }.`;
+            const msg = `I have ordered you ${ result.item } on ${ deliveryDateMsg }.`;
             await stepContext.context.sendActivity(msg, msg, InputHints.IgnoringInput);
         }
 
