@@ -17,7 +17,7 @@ const { OrderRecognizer } = require('./dialogs/orderRecognizer');
 const { DialogAndWelcomeBot } = require('./bots/dialogAndWelcomeBot');
 const { MainDialog } = require('./dialogs/mainDialog');
 
-// the bot's booking dialog
+// the bot's order dialog
 const { OrderDialog } = require('./dialogs/orderDialog');
 const ORDER_DIALOG = 'orderDialog';
 
@@ -69,7 +69,7 @@ const memoryStorage = new MemoryStorage();
 const conversationState = new ConversationState(memoryStorage);
 const userState = new UserState(memoryStorage);
 
-// If configured, pass in the FlightBookingRecognizer.  (Defining it externally allows it to be mocked for tests)
+// If configured, pass in the OrderRecognizer.  (Defining it externally allows it to be mocked for tests)
 const { LuisAppId, LuisAPIKey, LuisAPIHostName } = process.env;
 const luisConfig = { applicationId: LuisAppId, endpointKey: LuisAPIKey, endpoint: `https://${ LuisAPIHostName }` };
 

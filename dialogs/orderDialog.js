@@ -20,7 +20,6 @@ class OrderDialog extends CancelAndHelpDialog {
             .addDialog(new ConfirmPrompt(CONFIRM_PROMPT))
             .addDialog(new DateResolverDialog(DATE_RESOLVER_DIALOG))
             .addDialog(new WaterfallDialog(WATERFALL_DIALOG, [
-                //this.destinationStep.bind(this),
                 this.itemStep.bind(this),
                 this.deliveryDateStep.bind(this),
                 this.confirmStep.bind(this),
@@ -31,27 +30,13 @@ class OrderDialog extends CancelAndHelpDialog {
     }
 
     /**
-     * If a destination city has not been provided, prompt for one.
-     */
-    // async destinationStep(stepContext) {
-    //     const bookingDetails = stepContext.options;
-
-    //     if (!bookingDetails.destination) {
-    //         const messageText = 'To what city would you like to travel?';
-    //         const msg = MessageFactory.text(messageText, messageText, InputHints.ExpectingInput);
-    //         return await stepContext.prompt(TEXT_PROMPT, { prompt: msg });
-    //     }
-    //     return await stepContext.next(bookingDetails.destination);
-    // }
-
-    /**
-     * If an origin city has not been provided, prompt for one.
+     * If an delivery item has not been provided, prompt for one.
      */
     async itemStep(stepContext) {
         const orderDetails = stepContext.options;
 
         // Capture the response to the previous step's prompt
-        //orderDetails.item = stepContext.result;
+        orderDetails.item = stepContext.result;
         if (!orderDetails.item) {
             const messageText = 'What would you like to order?';
             const msg = MessageFactory.text(messageText, 'What would you like to order?', InputHints.ExpectingInput);
@@ -61,14 +46,14 @@ class OrderDialog extends CancelAndHelpDialog {
     }
 
     /**
-     * If a travel date has not been provided, prompt for one.
+     * If a delivery date has not been provided, prompt for one.
      * This will use the DATE_RESOLVER_DIALOG.
      */
     async deliveryDateStep(stepContext) {
         const orderDetails = stepContext.options;
 
         // Capture the results of the previous step
-        orderDetails.origin = stepContext.result;
+        orderDetails.item = stepContext.result;
         if (!orderDetails.DeliveryDate || this.isAmbiguous(orderDetails.deliveryDate)) {
             return await stepContext.beginDialog(DATE_RESOLVER_DIALOG, { date: orderDetails.deliveryDate });
         }
@@ -83,7 +68,7 @@ class OrderDialog extends CancelAndHelpDialog {
 
         // Capture the results of the previous step
         orderDetails.deliveryDate = stepContext.result;
-        const messageText = `Please confirm, I have you ordering to: ${ orderDetails.item } on: ${ orderDetails.deliveryDate }. Is this correct?`;
+        const messageText = `Please confirm, I have you ordering: ${ orderDetails.item } on: ${ orderDetails.deliveryDate }. Is this correct?`;
         const msg = MessageFactory.text(messageText, messageText, InputHints.ExpectingInput);
 
         // Offer a YES/NO prompt.

@@ -29,6 +29,8 @@ class CancelAndHelpDialog extends ComponentDialog {
                 return { status: DialogTurnStatus.waiting };
             }
             case 'cancel':
+            case 'cancel my order':
+            case 'discard':
             case 'quit': {
                 const cancelMessageText = 'Cancelling...';
                 await innerDc.context.sendActivity(cancelMessageText, cancelMessageText, InputHints.IgnoringInput);

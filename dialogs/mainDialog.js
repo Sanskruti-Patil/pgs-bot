@@ -18,7 +18,7 @@ class MainDialog extends ComponentDialog {
         if (!orderDialog) throw new Error('[MainDialog]: Missing parameter \'orderDialog\' is required');
 
         // Define the main dialog and its related components.
-        // This is a sample "book a flight" dialog.
+        // This is a "Place an Order" dialog.
         this.addDialog(new TextPrompt('TextPrompt'))
             .addDialog(orderDialog)
             .addDialog(new WaterfallDialog(MAIN_WATERFALL_DIALOG, [
@@ -49,8 +49,8 @@ class MainDialog extends ComponentDialog {
 
     /**
      * First step in the waterfall dialog. Prompts the user for a command.
-     * Currently, this expects a booking request, like "book me a flight from Paris to Berlin on march 22"
-     * Note that the sample LUIS model will only recognize Paris, Berlin, New York and London as airport cities.
+     * Currently, this expects a ordering request, like "deliver me rice on march 22"
+     * Note that the sample LUIS model will only recognize rice, sugar, wheat etc as grocesry items.
      */
     async introStep(stepContext) {
         if (!this.luisRecognizer.isConfigured) {
@@ -65,8 +65,8 @@ class MainDialog extends ComponentDialog {
     }
 
     /**
-     * Second step in the waterfall.  This will use LUIS to attempt to extract the origin, destination and travel dates.
-     * Then, it hands off to the bookingDialog child dialog to collect any remaining details.
+     * Second step in the waterfall.  This will use LUIS to attempt to extract the delivery items and delivery dates.
+     * Then, it hands off to the orderDialog child dialog to collect any remaining details.
      */
     async actStep(stepContext) {
         const orderDetails = {};
@@ -81,28 +81,19 @@ class MainDialog extends ComponentDialog {
         switch (LuisRecognizer.topIntent(luisResult)) {
         case 'PlaceOrder': {
             // Extract the values for the composite entities from the LUIS result.
-            //const fromEntities = this.luisRecognizer.getFromEntities(luisResult);
             const deliverEntities = this.luisRecognizer.getDeliverEntities(luisResult);
 
-            // Show a warning for Origin and Destination if we can't resolve them.
+            // Show a warning for items if we can't resolve them.
             await this.showWarningForUnsupportedItems(stepContext.context, deliverEntities);
 
-            // Initialize BookingDetails with any entities we may have found in the response.
-            //bookingDetails.destination = toEntities.airport;
+            // Initialize OrderingDetails with any entities we may have found in the response.
             orderDetails.item = deliverEntities.itemList;
             orderDetails.deliveryDate = this.luisRecognizer.getDeliveryDate(luisResult);
             console.log('LUIS extracted these order details:', JSON.stringify(orderDetails));
 
-            // Run the BookingDialog passing in whatever details we have from the LUIS call, it will fill out the remainder.
+            // Run the OrderDialog passing in whatever details we have from the LUIS call, it will fill out the remainder.
             return await stepContext.beginDialog('orderDialog', orderDetails);
         }
-
-        // case 'GetWeather': {
-        //     // We haven't implemented the GetWeatherDialog so we just display a TODO message.
-        //     const getWeatherMessageText = 'TODO: get weather flow here';
-        //     await stepContext.context.sendActivity(getWeatherMessageText, getWeatherMessageText, InputHints.IgnoringInput);
-        //     break;
-        // }
 
         default: {
             // Catch all for unhandled intents
@@ -115,15 +106,12 @@ class MainDialog extends ComponentDialog {
     }
 
     /**
-     * Shows a warning if the requested From or To cities are recognized as entities but they are not in the Airport entity list.
-     * In some cases LUIS will recognize the From and To composite entities as a valid cities but the From and To Airport values
-     * will be empty if those entity values can't be mapped to a canonical item in the Airport.
+     * Shows a warning if the requested items are recognized as entities but they are not in the ItemList entity list.
+     * In some cases LUIS will recognize the deliver composite entities as a valid items but the Deliver ItemList values
+     * will be empty if those entity values can't be mapped to a canonical item in the ItemList.
      */
     async showWarningForUnsupportedItems(context, deliverEntities) {
         const unsupportedItems = [];
-        // if (fromEntities.from && !fromEntities.airport) {
-        //     unsupportedCities.push(fromEntities.from);
-        // }
 
         if (deliverEntities.deliver && !deliverEntities.itemList) {
             unsupportedItems.push(deliverEntities.deliver);
@@ -137,17 +125,15 @@ class MainDialog extends ComponentDialog {
 
     /**
      * This is the final step in the main waterfall dialog.
-     * It wraps up the sample "book a flight" interaction with a simple confirmation.
+     * It wraps up the sample "place an order" interaction with a simple confirmation.
      */
     async finalStep(stepContext) {
-        // If the child dialog ("bookingDialog") was cancelled or the user failed to confirm, the Result here will be null.
+        // If the child dialog ("orderDialog") was cancelled or the user failed to confirm, the Result here will be null.
         if (stepContext.result) {
             const result = stepContext.result;
-            // Now we have all the booking details.
+            // Now we have all the order details.
 
-            // This is where calls to the booking AOU service or database would go.
-
-            // If the call to the booking service was successful tell the user.
+            // If the call to the ordering service was successful tell the user.
             const timeProperty = new TimexProperty(result.deliveryDate);
             const deliveryDateMsg = timeProperty.toNaturalLanguage(new Date(Date.now()));
             const msg = `I have you ordered ${ result.item } on ${ deliveryDateMsg }.`;

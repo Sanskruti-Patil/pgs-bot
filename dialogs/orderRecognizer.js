@@ -29,18 +29,6 @@ class OrderRecognizer {
         return await this.recognizer.recognize(context);
     }
 
-    // getFromEntities(result) {
-    //     let fromValue, fromAirportValue;
-    //     if (result.entities.$instance.From) {
-    //         fromValue = result.entities.$instance.From[0].text;
-    //     }
-    //     if (fromValue && result.entities.From[0].Airport) {
-    //         fromAirportValue = result.entities.From[0].Airport[0][0];
-    //     }
-
-    //     return { from: fromValue, airport: fromAirportValue };
-    // }
-
     getDeliverEntities(result) {
         let deliverValue, deliverItemListValue;
         if (result.entities.$instance.Deliver) {
