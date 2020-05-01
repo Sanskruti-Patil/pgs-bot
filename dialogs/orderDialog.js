@@ -14,7 +14,7 @@ const WATERFALL_DIALOG = 'waterfallDialog';
 
 class OrderDialog extends CancelAndHelpDialog {
     constructor(id) {
-        super(id || 'bookingDialog');
+        super(id || 'orderDialog');
 
         this.addDialog(new TextPrompt(TEXT_PROMPT))
             .addDialog(new ConfirmPrompt(CONFIRM_PROMPT))
@@ -51,7 +51,7 @@ class OrderDialog extends CancelAndHelpDialog {
         const orderDetails = stepContext.options;
 
         // Capture the response to the previous step's prompt
-        orderDetails.item = stepContext.result;
+        //orderDetails.item = stepContext.result;
         if (!orderDetails.item) {
             const messageText = 'What would you like to order?';
             const msg = MessageFactory.text(messageText, 'What would you like to order?', InputHints.ExpectingInput);

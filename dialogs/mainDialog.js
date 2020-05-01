@@ -69,11 +69,11 @@ class MainDialog extends ComponentDialog {
      * Then, it hands off to the bookingDialog child dialog to collect any remaining details.
      */
     async actStep(stepContext) {
-        const OrderDetails = {};
+        const orderDetails = {};
 
         if (!this.luisRecognizer.isConfigured) {
             // LUIS is not configured, we just run the BookingDialog path.
-            return await stepContext.beginDialog('orderDialog', OrderDetails);
+            return await stepContext.beginDialog('orderDialog', orderDetails);
         }
 
         // Call LUIS and gather any potential booking details. (Note the TurnContext has the response to the prompt)
@@ -85,7 +85,7 @@ class MainDialog extends ComponentDialog {
             const deliverEntities = this.luisRecognizer.getDeliverEntities(luisResult);
 
             // Show a warning for Origin and Destination if we can't resolve them.
-            await this.showWarningForUnsupportedCities(stepContext.context, deliverEntities);
+            await this.showWarningForUnsupportedItems(stepContext.context, deliverEntities);
 
             // Initialize BookingDetails with any entities we may have found in the response.
             //bookingDetails.destination = toEntities.airport;
