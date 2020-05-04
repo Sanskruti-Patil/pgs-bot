@@ -35,8 +35,6 @@ class OrderDialog extends CancelAndHelpDialog {
     async itemStep(stepContext) {
         const orderDetails = stepContext.options;
 
-        // Capture the response to the previous step's prompt
-        orderDetails.item = stepContext.result;
         if (!orderDetails.item) {
             const messageText = 'What would you like to order?';
             const msg = MessageFactory.text(messageText, 'What would you like to order?', InputHints.ExpectingInput);

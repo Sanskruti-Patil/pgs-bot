@@ -72,7 +72,7 @@ class MainDialog extends ComponentDialog {
         const orderDetails = {};
 
         if (!this.luisRecognizer.isConfigured) {
-            // LUIS is not configured, we just run the BookingDialog path.
+            // LUIS is not configured, we just run the OrderingDialog path.
             return await stepContext.beginDialog('orderDialog', orderDetails);
         }
 
@@ -86,7 +86,7 @@ class MainDialog extends ComponentDialog {
             // Show a warning for items if we can't resolve them.
             await this.showWarningForUnsupportedItems(stepContext.context, deliverEntities);
 
-            // Initialize OrderingDetails with any entities we may have found in the response.
+            // Initialize OrderDetails with any entities we may have found in the response.
             orderDetails.item = deliverEntities.itemList;
             orderDetails.deliveryDate = this.luisRecognizer.getDeliveryDate(luisResult);
             console.log('LUIS extracted these order details:', JSON.stringify(orderDetails));
